@@ -1,0 +1,27 @@
+<html>
+
+<body>
+
+	<h1>Video Games!</h1>
+
+	{% for g in games %}
+
+	<div>
+		<p>{{g.gameName}}</p>
+
+		<p>{{g.companyName}}</p>
+
+		<p>{{g.coverUrl}}</p>
+
+		<p>{{g.description}}</p>
+
+		<p>{{g.platform}}</p>
+	</div>
+
+	<div class ="editanddeletepane">
+		<a href ='#'>Edit</a>
+		<a href ='#'>Delete</a>
+	</div>
+	{% endfor %}
+</body>
+</html>
