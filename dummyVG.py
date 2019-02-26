@@ -1,6 +1,7 @@
+#User, Platform, VideoGame
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Videogames, User, Genre
+from database_setup import Base, User, Platform, VideoGames
 
 engine = create_engine('sqlite:///VideoGamesCatalog.db')
 
@@ -9,97 +10,100 @@ DBSession = sessionmaker(bind = engine)
 session = DBSession()
 
 #Dummy Video Games Data
-#ICDH = Insert Creative Description Here
+
 
 User1 = User(name ="Chibi", email="whoa.its.chibi@gmail.com")
 session.add(User1)
 session.commit()
 
-#Create Genres
-genre1 = Genre(user_id =1, name="JRPG")
-session.add(genre1)
+#Create Platform PC and Games
+platform1 = Platform(name ="PC", user_id="1")
+session.add(platform1)
 session.commit()
 
-genre2 = Genre(user_id=1, name ="Hero Based Shooter")
-session.add(genre2)
+VideoGame1 = VideoGames(name="Overwatch", 
+	description = "You control several heroes shooting objectives!",
+	company = "Blizzard Entertainment", releaseyear = '2016',
+	platform = platform1, user_id = 1)
+
+session.add(VideoGame1)
 session.commit()
 
-genre3=Genre(user_id=1, name="Rhythm")
-session.add(genre3)
+VideoGame2 = VideoGames(name="League of Legends", 
+	description = "similar to DoTA", company = "Riot Games",
+	releaseyear = "2009", platform = platform1, user_id =1)
+
+session.add(VideoGame2)
 session.commit()
 
-genre4=Genre(user_id=1, name="Action/Adventure")
-session.add(genre4)
+VideoGame3 = VideoGames(name = "Five Nights at Freddy's",
+	description ="5 nights, will you survive?", company = "Scott Games", 
+	releaseyear = '2014', platform = platform1, 
+	user_id = 1)
+
+session.add(VideoGame3)
 session.commit()
 
-genre5=Genre(user_id=1, name="Horror")
-session.add(genre5)
+#Create Platform PS4 and Games
+platform2 = Platform(name = "Playstation")
+session.add(platform2)
 session.commit()
 
-genre6=Genre(user_id=1, name="Platformer")
-session.add(genre6)
+VideoGame1 = VideoGames(name = "Kingdom Hearts 2.8", 
+	description = "Final Chapter before KH3!", company = "Square Enix", 
+	releaseyear = "2017", platform = platform2)
+
+session.add(VideoGame1)
 session.commit()
 
-genre7=Genre(user_id=1, name="Battle Royale")
-session.add(genre7)
+VideoGame2 = VideoGames(name = "Ryu Ga Gotoku: 0", 
+	description = "Japan 1988.", company = "Sega", 
+	releaseyear = "2017",  platform = platform2)
+session.add(VideoGame2)
 session.commit()
 
-genre8 = Genre(user_id =1, name ="Fighter")
-session.add(genre8)
+VideoGame3 = VideoGames(name = "Final Fantasy XV", 
+	description = "The Fifteenth main installment!", company = "Square Enix",
+	releaseyear = "2016", platform = platform2)
+session.add(VideoGame3)
 session.commit()
 
-genre9 = Genre(user_id =1, name ="Sports")
-session.add(genre9)
+#Create Platform Xbox and Games
+platform3 = Platform(name = "XBOX")
+session.add(platform3)
 session.commit()
 
-genre10 = Genre(user_id = 1, name ="Puzzle")
-session.add(genre10)
+VideoGame1 = VideoGames(name ="Halo:Combat Evolved", 
+	description = "An interstellar war between Humans and the Covenant", 
+	company = "Microsoft", releaseyear = "2001",  
+	platform = platform3)
+session.add(VideoGame1)
 session.commit()
 
-
-#Create Game to Genre
-VG1=Videogames(gameName = "Overwatch", companyName ="Blizzard Entertainment",
-	coverUrl ="#", releaseYear="2016", description ="ICDH", genre = genre2, 
-	platform = "PC,Xbox One, Playstation 4")
-session.add(VG1)
+VideoGame2 = VideoGames(name = "Fable", description = 
+	"ICDH", company = "Microsoft", releaseyear = "2004", 
+	platform = platform3)
+session.add(VideoGame2)
 session.commit()
 
-VG2=Videogames(gameName = "Ryu ga Gotoku (Like a dragon):0", companyName="Sega",
-	coverUrl ="#", releaseYear ="2015", description ="ICDH", genre = genre1,
-	platform ="Playstation 4")
-session.add(VG2)
+#Create Platform Nintendo and Games
+platform4 = Platform(name = "Nintendo")
+session.add(platform4)
 session.commit()
 
-VG3=Videogames(gameName = "Dance Dance Revolution", companyName="Konami",
-	coverUrl ="#", releaseYear="1998", description ="ICDH", genre = genre3,
-	platform ="Arcade")
-session.add(VG3)
+VideoGame1 = VideoGames(name = "Super Mario Bros", 
+	description = "The Original", company = "Nintendo", releaseyear = "1985",
+	platform = platform4)
+session.add(VideoGame1)
 session.commit()
 
-VG4=Videogames(gameName ="Persona 5", companyName="Atlus", coverUrl="#",
-	releaseYear="2017", description ="ICDH", genre = genre1, platform="Playstation 4")
-session.add(VG4)
+VideoGame2 = VideoGames(name = "Super Smash Bros: Melee", 
+	description = "Nintendo's all stars are back!", company = "Nintendo",
+	releaseyear = "2003", platform = platform4)
+session.add(VideoGame2)
 session.commit()
 
-VG5=Videogames(gameName="Super Mario Bros", companyName="Nintendo", coverUrl="#",
-	releaseYear="1985", description="ICDH", genre=genre6, platform="Nintendo Entertainment System")
-session.add(VG5)
-session.commit()
+VideoGame3 = VideoGames(name = "Mario Party", description ="A party game that destroys friendships!",
+	company ="Nintendo", releaseyear = "1998", platform = platform4)
 
-VG6=Videogames(gameName="Fortnite", companyName="Epic Games", coverUrl="#",
-	releaseYear ="2017", description="ICDH", genre = genre7, 
-	platform ="PC, XBOX One, Playstation 4, Mobile, Nintendo Switch")
-session.add(VG6)
-session.commit()
-
-VG7=Videogames(gameName="The Legend of Zelda: Ocarina of Time", companyName="Nintendo",
-	coverUrl="#", releaseYear="1998", description ="ICDH", genre = genre4, platform = "Nintendo 64")
-session.add(VG7)
-session.commit()
-
-VG8=Videogames(gameName="Five Nights at Freddy's", companyName="Scott Games", 
-	coverUrl="#", releaseYear="2014", description="ICDH", genre= genre5, platform ="PC, Mobile")
-session.add(VG8)
-session.commit()
-
-print('Added everything!')
+print("Games and Platforms Added!")
