@@ -13,7 +13,7 @@ import json
 
 app = Flask(__name__)
 
-engine = create_engine('sqlite:///VideoGamesCatalog.db')
+engine = create_engine('sqlite:///VideoGamesCatalog.db?, check_same_thread = False')
 
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind = engine)
