@@ -14,53 +14,45 @@ class User(Base):
 	name = Column(String(250), nullable = False)
 	email = Column(String(250), nullable = False)
 	picture = Column(String(250))
-	
-class Genre(Base):
-	__tablename__ = 'genre'
-	id =Column(Integer, primary_key = True)
+
+class Platform(Base):
+	__tablename__ = "Platform"
+
+	id =Column(Integer,primary_key = True)
 	name = Column(String(50), nullable = False)
 	user_id = Column(Integer, ForeignKey('user.id'))
 	user = relationship(User)
-	
-	@property
+
+	@property 
 	def serialize(self):
 		return {
-		'id':self.id,
-		'name':self.name,
-		'user_id':self.user_id
+			'id':self.id,
+			'name':self.name,
+			'user_id':self.user_id
 		}
 
-class Videogames(Base):
-	__tablename__ ='VideoGames'
-
-
-	id = Column(Integer,primary_key = True)
-	gameName = Column(String(250), nullable = False)
-	companyName = Column(String(250), nullable = False)
-	coverUrl = Column(String(250), nullable = False)
-	releaseYear = Column(String(250), nullable = False)
-	description = Column(String(), nullable = False)
-	genre_id = Column(Integer, ForeignKey('genre.id'))
-	genre = relationship(Genre)
-	platform = Column(String(250), nullable = False)
+class VideoGames(Base):
+	__tablename__ ='video_games'
+	id = Column(Integer, primary_key = True)
+	name = Column(String(80), nullable = False)
+	company = Column(String(80), nullable = False)
+	releaseyear = Column(String(80), nullable = False)
+	description = Column(String(250), nullable = False)
+	platform_id = Column(Integer, ForeignKey('Platform.id'))
+	platform = relationship(Platform)
 	user_id = Column(Integer, ForeignKey('user.id'))
 	user = relationship(User)
 
-@property 
-def serialize(self):
-	return {
-	'id': self.id,
-	'name': self.gameName,
-	'company': self.companyName,
-	'year': self.releaseYear,
-	'genre': self.genre,
-	'genre_id':self.genre_id
-	'coverUrl': self.coverUrl,
-	'description': self.description,
-	'platform': self.platform
-	'user_id':self.user_id
-	}
+	@property 
+	def serialize(self):
+		return {
+			'name':self.name,
+			'company':self.company,
+			'releaseyear':self.releaseyear,
+			'description':self.description,
+			'platform': self.platform.name,
 
+		}
 
 engine = create_engine('sqlite:///VideoGamesCatalog.db')
 
