@@ -1,0 +1,31 @@
+<html>
+
+<head>
+</head>
+<body>
+
+	<h1>Edit Platform!</h1>
+	<div class='body'>
+		<form action = "{{url_for('editgame', platform_id = platform_id, id = VideoGamesid)}}" method = 'POST'>
+
+			<p>Name</p>
+			<input type='text' size ='50' name='name' placeholder = '{{video_game.name}}'>
+			<p>Company:</p>
+			<input type='text' size='20' name='company' placeholder = '{{video_game.company}}'>
+			<p>Release Year:</p>
+			<input type="text" size= '20' name="releaseyear" placeholder = '{{video_game.releaseyear}}'>	
+			<p>Description:</p>
+			<input type="text" size ="50" name="description" 
+			placeholder ='{{video_game.description}}'>
+
+
+
+
+		<input type ='submit' value ='Edit'>
+
+		<a href='#'>Cancel</a>
+	</form>
+</div>
+</body>
+
+</html>

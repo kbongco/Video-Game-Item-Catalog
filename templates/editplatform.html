@@ -1,0 +1,23 @@
+<html>
+
+<head>
+</head>
+<body>
+
+	<h1>Edit Platform!</h1>
+	<div class='body'>
+		<form action = "{{url_for('editplatform', platform_id = platform.id)}}" method = 'POST'>
+
+			<p>Name</p>
+			<input type='text' size ='50' name='name' placeholder = '{{platform_name}}'>
+
+
+
+		<input type ='submit' value ='Edit'>
+
+		<a href='{{url_for('Platforms')}}'>Cancel</a>
+	</form>
+</div>
+</body>
+
+</html>
