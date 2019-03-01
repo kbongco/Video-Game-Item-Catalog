@@ -1,0 +1,29 @@
+<html>
+<head>
+	<title>View Games in the Platforms here!</title>
+</head>
+</body>
+<div class='Header'>
+	<h1>Video Games! in this platform! </h1>
+	<p> Don't see a game you like here? <a href="#">Add your game!</a>
+</div>
+{% for g in games %}
+
+	<div>
+		<p>{{g.name}}</p>
+
+		<p>{{g.companyname}}</p>
+
+		<p>{{g.releaseyear}}</p>
+
+		<p>{{g.description}}</p>
+
+	</div>
+
+		<div class ="editanddeletepane">
+		<h2><a href ="#">Edit</a></h2>
+		<h2><a href ="#">Delete</a></h2>
+	</div>
+	{% endfor %}
+</body>
+</html>
