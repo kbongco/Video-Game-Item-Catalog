@@ -47,11 +47,11 @@ class VideoGames(Base):
 	def serialize(self):
 		return {
 			'name':self.name,
+			'id':self.id,
 			'company':self.company,
 			'releaseyear':self.releaseyear,
 			'description':self.description,
 			'platform': self.platform.name,
-
 		}
 
 engine = create_engine('sqlite:///VideoGamesCatalog.db')
