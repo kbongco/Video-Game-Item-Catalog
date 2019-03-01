@@ -10,36 +10,36 @@ DBSession = sessionmaker(bind = engine)
 session = DBSession()
 
 #Dummy Video Games Data
-
+#ICDH = Insert Creative Description Here
+#name, company, coverURL, releaseyear,description, genre, company 
 
 User1 = User(name ="Chibi", email="whoa.its.chibi@gmail.com")
 session.add(User1)
 session.commit()
 
 #Create Platform PC and Games
-platform1 = Platform(name ="PC", user_id="1")
+platform1 = Platform(name ="PC")
 session.add(platform1)
 session.commit()
 
 VideoGame1 = VideoGames(name="Overwatch", 
 	description = "You control several heroes shooting objectives!",
 	company = "Blizzard Entertainment", releaseyear = '2016',
-	platform = platform1, user_id = 1)
+	platform = platform1)
 
 session.add(VideoGame1)
 session.commit()
 
 VideoGame2 = VideoGames(name="League of Legends", 
 	description = "similar to DoTA", company = "Riot Games",
-	releaseyear = "2009", platform = platform1, user_id =1)
+	releaseyear = "2009", platform = platform1)
 
 session.add(VideoGame2)
 session.commit()
 
 VideoGame3 = VideoGames(name = "Five Nights at Freddy's",
 	description ="5 nights, will you survive?", company = "Scott Games", 
-	releaseyear = '2014', platform = platform1, 
-	user_id = 1)
+	releaseyear = '2014', platform = platform1)
 
 session.add(VideoGame3)
 session.commit()
