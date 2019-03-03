@@ -2,7 +2,7 @@
 <title>Add a game here!</title>
 <h2>New Games!</h2>
 
-<form action = "#" method ="POST">
+<form action = "{{url_for('newgame', platform_id = platform_id)}}" method ="POST">
 	<p>Name:</p>
 		<input type='text' size ='50' name='name'>
 	<p>Company:</p>
