@@ -135,8 +135,6 @@ def Platforms():
 
 @app.route('/platforms/new', methods = ['GET', 'POST'])
 def newplatform():
-	if 'username' not in login_session:
-		return redirect('/login')
 	if request.method == 'POST':
 		newplatform = Platform(name = request.form['name'])
 		session.add(newplatform)
@@ -148,8 +146,6 @@ def newplatform():
 @app.route('/platforms/<int:platform_id>/edit/', methods = ['GET', 'POST'])
 def editplatform(platform_id):
 	editedplatform = session.query(Platform).filter_by(id = platform_id).one()
-	if 'username' not in login_session:
-		return redirect('/login')
 	if request.method =='POST':
 		if request.form['name']:
 			editedplatform = request.form['name']
@@ -162,8 +158,6 @@ def editplatform(platform_id):
 def deleteplatform(platform_id):
 	deleteplatform = session.query(Platform).filter_by(
 		id = platform_id).one()
-	if 'username' not in login_session:
-		return redirect('/login')
 	if request.method == 'POST':
 		session.delete(deleteplatform)
 		flash('Say bye to the Platform!')
@@ -193,35 +187,38 @@ def newgame(platform_id):
 		flash("New Game was added!")
 		return redirect(url_for('games', platform_id = platform_id, newgame = newgame))
 	else:
-		return render_template('newgame.html')
+		return render_template('newgame.html', platform_id = platform_id)
 
-@app.route('/platforms/<int:platform_id>/games/<int:games_id>/edit')
-def editgame(platform_id, games_id):
-	editgame = session.query(VideoGames).filter_by(platform_id = platform_id, id = games_id).one()
-	if request.method =='POST':
-		name = request.form['name']
-		releaseyear = request.form['releaseyear']
-		description = request.form['description']
-		platform_id = platform_id
-		session.add()
+@app.route('/platforms/<int:platform_id>/games/<int:game_id>/edit', methods = ['GET', 'POST'])
+def editgame(platform_id, game_id):
+	editgame = session.query(VideoGames).filter_by(id=game_id).one()
+	if request.method == 'POST':
+		if request.form['name']:
+			editgame.name = request.form['name']
+		if request.form['releaseyear']:
+			editgame.releaseyear = request.form['releaseyear']
+		if request.form['description']:
+			editgame.description = request.form['description']
+		session.add(editgame)
 		session.commit()
 		flash('You edited the game!')
-		return redirect(url_for('games'))
+		return redirect(url_for('games'), platform_id = platform_id)
 	else:
-		return render_template('editgame.html', platform_id = platform_id, games_id = VideoGames.id, editgame = editgame)
+		return render_template('editgame.html', platform_id = platform_id, game_id = game_id, g = editgame)
 
 
 
-@app.route('/platforms/<int:platform_id>/<int:games_id>/delete')
-def deletegame(platform_id):
-	deletegame = session.query(VideoGames).filter_by(platform_id = platform_id).one()
+
+@app.route('/platforms/<int:platform_id>/<int:game_id>/delete', methods =['GET','POST'])
+def deletegame(platform_id,game_id):
+	deletegame = session.query(VideoGames).filter_by(id=game_id).one()
 	if request.method == 'POST':
 		session.delete(deletegame)
-		flash('Say bye to the game!')
 		session.commit()
-		return redirect(url_for('games'))
+		flash('Say bye to the game!')
+		return redirect(url_for('games'), platform_id = platform_id)
 	else:
-		return render_template(url_for('deletegame', games = deletegame))
+		return render_template('deletegame.html', platform_id = platform_id, game_id = game_id, g = deletegame)
 
 
 
