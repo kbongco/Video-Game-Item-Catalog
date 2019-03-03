@@ -35,7 +35,6 @@ class VideoGames(Base):
 	__tablename__ ='video_games'
 	id = Column(Integer, primary_key = True)
 	name = Column(String(80), nullable = False)
-	company = Column(String(80), nullable = False)
 	releaseyear = Column(String(80), nullable = False)
 	description = Column(String(250), nullable = False)
 	platform_id = Column(Integer, ForeignKey('Platform.id'))
@@ -48,7 +47,6 @@ class VideoGames(Base):
 		return {
 			'name':self.name,
 			'id':self.id,
-			'company':self.company,
 			'releaseyear':self.releaseyear,
 			'description':self.description,
 			'platform': self.platform.name,
