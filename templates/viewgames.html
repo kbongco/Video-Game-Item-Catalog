@@ -5,7 +5,7 @@
 </body>
 <div class='Header'>
 	<h1>Video Games! in this platform! </h1>
-	<p> Don't see a game you like here? <a href="#">Add your game!</a>
+	<p> Don't see a game you like here? <a href="{{url_for('newgame', platform_id = platform_id)}}">Add your game!</a>
 </div>
 {% for g in games %}
 
@@ -21,8 +21,8 @@
 	</div>
 
 		<div class ="editanddeletepane">
-		<h2><a href ="#">Edit</a></h2>
-		<h2><a href ="#">Delete</a></h2>
+		<h2><a href ="{{url_for('editgame', platform_id = platform_id, game_id = g.id)}}">Edit</a></h2>
+		<h2><a href ="{{url_for('deletegame', platform_id = g.platform_id, game_id = g.id)}}">Delete</a></h2>
 	</div>
 	{% endfor %}
 </body>
