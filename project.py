@@ -4,8 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User, Platform, VideoGames
 import requests 
 from flask import session as login_session
-import random
-import string
+import random, string
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 import httplib2
@@ -50,7 +49,7 @@ def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
     login_session['state'] = state
-    return render_template('login.html', STATE = state)
+    return render_template('login.html')
 
 
 @app.route('/gonnect', methods = ['POST'])
@@ -72,6 +71,7 @@ def gconnect():
 			json.dumps('Failed to upgrade the authorization code.'),401)
 		response.headers['Content-Type'] ='application/json'
 		return response
+	
 	#Checking Access token 
 	access_token = credentials.access_token
 	url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
@@ -83,16 +83,36 @@ def gconnect():
 		response.headers['Content-Type'] = 'application/json'
 		return response
 
+	#Verify Access Token 	
+	gplus_id = credentials.id_token['sub']
+	if result['user_id'] != gplus_id:
+		response = make_response(
+			json.dumps("Token's user ID doesn't match given user ID."), 401)
+		repsonse.headers['Content-Type'] = 'application/json'
+		return response	
+
+	#Verify Access token is valid for this app 
+	if result['issued_to'] != CLIENT_ID:
+		response = make_response(
+			json.dumps("Token's client ID does not match app's."), 401)
+		print "Token's client ID does not match app's."
+		reponse.headers['Content-Type'] = 'application/json'
+		return response 
+
 	stored_access_token = login_session.get('access_token')
-	stored_gplus_is = login_session.get('gplus_id')
+	stored_gplus_id = login_session.get('gplus_id')
 	if stored_access_token is not None and gplus_id == stored_gplus_id:
 		response = make_response(json.dumps('Current user is already connected'), 200)
 		response.headers['Content-Type']= 'application/json'
 		return response
 
+
+	# Store access token for later use.
 	login_session['access_token'] = credentials.access_token
 	login_session['gplus_id'] = gplus_id 
 
+
+	#Get User Info
 	userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
 	params = {'access_token' : credentials.access_token, 'alt':'json'}
 	answer = requests.get(userinfo_url, params = params)
@@ -119,12 +139,42 @@ def gconnect():
 
 @app.route('/gdisconnect')
 def gdisconnect():
-	access_token = login_session.get('access_token')
-	if access_token is None:
+	credentials  = login_session.get('credentials')
+	if credentials is None:
 		response = make_response(
 			json.dumps('Current user not connected.'), 401)
 		response.headers['Content-Type'] = 'application/json'
-		return response    
+		return response
+	access_token = credentials.access_token
+	url = 'https://accounts.google.omc/o/oauth2/revoke?token=%s' % long_session['access_token']
+	h = httplib2.Http()
+	result = h.request(url, 'GET')[0]
+	print 'result is'
+	print result
+	if result['status'] == '200':
+		del login_session['access_token']
+		del login_session['gplus_id']
+		del login_session['username']
+		del login_session['email']
+		del login_session['picture']
+		response = make_response(json.dumps('Successfully disconnected'), 200)
+		response.headers['Content-Type'] = 'application/json'
+		return response	    
+
+#JSON APIS to view information 
+@app.route('/platforms/JSON')
+def platformsJSON():
+	platforms = session.query(Platform).all()
+	return jsonify(platforms=[p.serialize for p in platforms])
+
+@app.route('/platforms/<int:platform_id>/games/JSON')
+def platformgamesJSON(platform_id):
+	platforms = session.query(Platform).filter_by(
+		id = platform_id).one()
+	games = session.query(VideoGames).filter_by(
+		platform_id = platform_id).all()
+	return jsonify(VideoGames =[g.serialize for g in games])
+
 
 #Showing the Platforms for Games
 @app.route('/')
@@ -135,6 +185,8 @@ def Platforms():
 
 @app.route('/platforms/new', methods = ['GET', 'POST'])
 def newplatform():
+	if 'username' not in login_session:
+		return redirect('/login')
 	if request.method == 'POST':
 		newplatform = Platform(name = request.form['name'])
 		session.add(newplatform)
@@ -165,6 +217,7 @@ def deleteplatform(platform_id):
 		return redirect(url_for('Platforms'))
 	else:
 		return render_template('deleteplatform.html', platform = deleteplatform)
+
 
 #Viewing Games in the categoriess
 
@@ -208,7 +261,6 @@ def editgame(platform_id, game_id):
 
 
 
-
 @app.route('/platforms/<int:platform_id>/<int:game_id>/delete', methods =['GET','POST'])
 def deletegame(platform_id,game_id):
 	deletegame = session.query(VideoGames).filter_by(id=game_id).one()
@@ -219,7 +271,6 @@ def deletegame(platform_id,game_id):
 		return redirect(url_for('games'), platform_id = platform_id)
 	else:
 		return render_template('deletegame.html', platform_id = platform_id, game_id = game_id, g = deletegame)
-
 
 
 
