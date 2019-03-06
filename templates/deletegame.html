@@ -1,0 +1,18 @@
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename ='deletegame.css')}}">
+	</head>
+
+	<body>
+		<h1>WARNING!</h1>
+		<h2>Are you sure you want to delete?</h2>
+		<div class ='body'>
+			<form action = "{{url_for('deletegame', platform_id = g.platform_id, game_id = g.id)}}" method = 'post'>
+				<input type = 'submit', value = 'Delete'>
+			</form>
+
+			<a href = "{{url_for('games', platform_id = g.platform_id, game_id = g.id)}}">Cancel</a>
+		</div>
+		
+	</body>
+	</html>
