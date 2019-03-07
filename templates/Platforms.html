@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title> </title>
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename ='Platforms.css')}}">
+  </head>
+  <body>
+    <div id="header">
+      <h1>Video Game Catalog!</h1>
+    </div>
+    <div id="nav">
+            <a href="{{url_for('newplatform')}}">Add a new Console/Platform!</a>
+      <a href="{{url_for('showLogin')}}">Login to Add stuff in!</a>
+      <a href="{{url_for('gdisconnect')}}">Log out here!</a>
+    </div>
+    <div class="main">
+          <h1>Platforms!</h1>
+	<p>Platform is another name for console, just in case
+		you are a little confused! Also because some games that are here are on PC, You can add another 
+	platform for games here!</p>
+      
+
+
+	{% for platform in platforms %}
+
+	<h2>{{platform.name}}</h2>
+
+	<p><a href="{{url_for('games', platform_id = platform.id)}}">View the Games here!</a></p>
+
+	<p><a href="{{url_for('editplatform', platform_id = platform.id)}}">Edit the Platform!</a></p>
+
+	<p><a href="{{url_for('deleteplatform', platform_id = platform.id)}}">Delete a platform!</a></p>
+
+
+	{% endfor %}
+    </div>
+  </body>
+</html>

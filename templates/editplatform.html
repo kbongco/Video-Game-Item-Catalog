@@ -1,0 +1,27 @@
+<html>
+
+<head>
+	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename ='editplatform.css')}}">
+</head>
+<body>
+
+	<h1>Edit Platform!</h1>
+	<p class='intro'>Feel free to change the name of the chosen platform!</p>
+	<p>Made a mistake and ended up here by accident? Click <a href='{{url_for('Platforms')}}'>Cancel</a> to go back!<p>
+
+	<div class='body'>
+		<form action = "{{url_for('editplatform', platform_id = platform.id)}}" method = 'POST'>
+
+			<p>Name</p>
+			<input type='text' size ='50' name='name' placeholder = '{{platform.name}}'>
+
+
+
+		<input type ='submit' value ='Edit'>
+
+	
+	</form>
+</div>
+</body>
+
+</html>

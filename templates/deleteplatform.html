@@ -1,0 +1,22 @@
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename ='deleteplatform.css')}}">
+
+	</head>
+
+	<body>
+		<h1>WARNING</h1>
+		<h1>Are you sure you want to delete {{platform.name}}?</h1>
+		<p>If you made a mistake click <a href="{{url_for('Platforms')}}"> here </a> 
+		to cancel!!</p>
+
+		<div class ='body'>
+			<form action = "#" method = 'post'>
+				<input type = 'submit', value = 'Delete'>
+
+			</form>
+			
+		</div>
+	</body>
+	</html>
+	

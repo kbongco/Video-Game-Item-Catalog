@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js">
+  </script>
+
+<script src="//apis.google.com/js/platform.js?onload=start"> </script>
+
+</head>
+
+<div id ='signinButton'>
+	<span class = 'g-signin'
+	data-scope = "openid email"
+	data-clientid='288462122144-pcobvtihgctpiltrvbaa853ph6r1llam.apps.googleusercontent.com'
+	data-redirecturi='postmessage'
+	data-accesstype='offline'
+	data-cookiepolicy='single_host_origin'
+	data-callback='signInCallback'
+	data-approvalprompt ='force'>
+</span>
+</div>
+<div id ='result'></div>
+
+<script>
+	function signInCallback(authResult) {
+		if (authResult['code']){
+			//Hiding the sign in button because user is authorized
+			$('#signinButton').attr('style', 'display:none');
+
+			//Sending one-time use code to server if the server responds a message will be sent to the web page and it will redirect
+
+			$.ajax({
+				type: 'POST',
+				url: '/gconnect?state={{STATE}}',
+				processData: false,
+				data: authResult['code'],
+				contentType: 'application/octet-stream; charset=utf-8',
+				success:function(result){
+					//verify server response if needed
+					if (result){
+						$('#result').html('Login successful!</br>' + result + '</br< Redirecting...')
+						setTimeout(function(){
+							windo.location.href = "/platform";
+						}, 4000)
+					} else if (authResult['error']){
+						console.log('There was an error:' + authResult['error']);
+					} else{
+						$('#result').html('Failed to make a server-side call. Check your configuratrion!')
+					}
+				}
+			});
+		}
+	}
+</script>
+</body>
+</html>
+
