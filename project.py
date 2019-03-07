@@ -1,5 +1,5 @@
-from flask import Flask, render_template, request, redirect , jsonify, url_for, flash
-from sqlalchemy import create_engine, asc
+from flask import Flask, render_template, request, redirect , jsonify, url_for, flash, make_response
+from sqlalchemy import create_engine 
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User, Platform, VideoGames
 import requests 
@@ -23,6 +23,93 @@ CLIENT_ID = json.loads(
 	open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME ="Video Games Item Catalog"
 
+
+#GConnect Information
+@app.route('/login')
+def showLogin():
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
+                    for x in xrange(32))
+    login_session['state'] = state
+    return render_template('login.html', STATE=state)
+
+#Actual Gconnect code
+@app.route('/gconnect', methods=['POST'])
+def gconnect():
+	#Validating state token
+	if request.args.get('state') != login_session['state']:
+		response = make_response(json.dumps('Invalid state parameter'), 401)
+		response.headers['Content-Type'] = 'application/json'
+		return response
+	#Obtain Authorization Code
+	code = request.data
+
+	try: 
+	#Upgrading the authorization code ---> credentials object
+		oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
+		oauth_flow.redirect_uri = 'postmessage'
+		credentials = oauth_flow.step2_exchange(code)
+	except FlowExchangeError:
+		response = make_response(
+			json.dumps('Failed to upgrade authorization code.'), 401)
+		response.headers['Content-Type'] = 'application/json'
+		return response
+
+	#Checking the access token if it is valid
+	access_token = credentials.access_token
+	url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
+		% access_token)
+	h = httplib2.Http()
+	result = json.loads(h.request(url,'GET')[1])
+	#An error in the access token info will be aborted 
+	if result.get('error') is not None:
+		response = make_response(json.dumps(result.get('error')), 500)
+		response.headers['Content-Type'] = 'application/json'
+		return response
+	
+	#The access token will be verified for intended user
+	gplus_id = credentials.id_token['sub']
+	if result['user_id'] != gplus_id:
+		response = make_response(
+			json.dumps("Token's user ID doesn't match given user ID."), 401)
+		response.headers['Content-Type'] = 'application/json'
+		return response
+
+	stored_access_token = login_session.get('access_token')
+	stored_gplus_id = login_session.get('gplus_id')
+	if stored_access_token is not None and gplus_id == stored_gplus_id:
+		response = make_response(json.dumps('Current user is already connected.'),
+			200)
+		response.headers['Content-Type'] = 'application/json'
+		return response
+
+	#Storing access token in the session for later use
+	login_session['access_token'] = credentials.access_token
+	login_session['gplus_id'] = gplus_id
+
+	#Getting user info
+	userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
+	params = {'access_token':credentials.access_token, 'alt': 'json'}
+	answer = requests.get(userinfo_url, params=params)
+
+	data = answer.json()
+
+	login_session['username'] = data['name']
+	login_session['picture'] = data['picture']
+	login_session['email'] = data['email']
+
+	output = ''
+	output += '<h1>Welcome,'
+	output += login_session['username']
+	output += '!</h1>'
+	output += '<img src="'
+	output += login_session['picture']
+	output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+	flash("you are now logged in as %s" % login_session['username'])
+	print "done!"
+	return output
+
+
+
 #Login Credentials
 def createUser(login_session):
 	newUser = User(name = login_session['username'], email = login_session[
@@ -43,123 +130,35 @@ def getUserID(email):
 	except:
 		return None
 
-#GConnect Information
-@app.route('/login')
-def showLogin():
-    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
-                    for x in xrange(32))
-    login_session['state'] = state
-    return render_template('login.html')
-
-
-@app.route('/gonnect', methods = ['POST'])
-def gconnect():
-	if request.args.get('state') != login_session['state']:
-		response = make_response(json.dumps('Invalid state parameter.'), 401)
-		response.headers['Content-Type'] = 'application/json'
-		return response 
-	#Obtaining auth code
-	code = request.data 
-
-	try:
-		#authorization -> credentials object
-		oauth_flow = flow_from_clientsecrets('client_secrets.json', scope ='')
-		oauth_flow.redirefct_uri = 'postmessage'
-		credentials = oauth_flow.step2_exchange(code)
-	except FlowExchangeError:
-		response = make_response(
-			json.dumps('Failed to upgrade the authorization code.'),401)
-		response.headers['Content-Type'] ='application/json'
-		return response
-	
-	#Checking Access token 
-	access_token = credentials.access_token
-	url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
-		% access_token)
-	h = httplib2.Http()
-	result = json.loads(h.request(url, 'GET')[1])
-	if result.get('error') is not None:
-		response = make_response(json.dumps(result.get('error')), 500)
-		response.headers['Content-Type'] = 'application/json'
-		return response
-
-	#Verify Access Token 	
-	gplus_id = credentials.id_token['sub']
-	if result['user_id'] != gplus_id:
-		response = make_response(
-			json.dumps("Token's user ID doesn't match given user ID."), 401)
-		repsonse.headers['Content-Type'] = 'application/json'
-		return response	
-
-	#Verify Access token is valid for this app 
-	if result['issued_to'] != CLIENT_ID:
-		response = make_response(
-			json.dumps("Token's client ID does not match app's."), 401)
-		print "Token's client ID does not match app's."
-		reponse.headers['Content-Type'] = 'application/json'
-		return response 
-
-	stored_access_token = login_session.get('access_token')
-	stored_gplus_id = login_session.get('gplus_id')
-	if stored_access_token is not None and gplus_id == stored_gplus_id:
-		response = make_response(json.dumps('Current user is already connected'), 200)
-		response.headers['Content-Type']= 'application/json'
-		return response
-
-
-	# Store access token for later use.
-	login_session['access_token'] = credentials.access_token
-	login_session['gplus_id'] = gplus_id 
-
-
-	#Get User Info
-	userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
-	params = {'access_token' : credentials.access_token, 'alt':'json'}
-	answer = requests.get(userinfo_url, params = params)
-
-	data = answer.json()
-
-	login_session['username'] = data['name']
-	login_session['picture'] = data['picture']
-	login_session['email'] = data['email']
-
-	output = ''
-	output +='<h1>Welcome,'
-	output += login_session['username']
-	output += '</h1>'
-	output += '<img src='
-	output += login_session['picture']
-	output += ' "style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius:150px;-moz-border-radius:150px;">'
-	flash ("You are  now logged in as %s" %login_session['username'])
-	print "done!"
-	return output		
-
-
 #GDISCONNECT CODE
 
 @app.route('/gdisconnect')
 def gdisconnect():
-	credentials  = login_session.get('credentials')
-	if credentials is None:
+	access_token = login_session.get('access_token')
+	if access_token is None:
 		response = make_response(
 			json.dumps('Current user not connected.'), 401)
 		response.headers['Content-Type'] = 'application/json'
 		return response
-	access_token = credentials.access_token
-	url = 'https://accounts.google.omc/o/oauth2/revoke?token=%s' % long_session['access_token']
+	url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
 	h = httplib2.Http()
-	result = h.request(url, 'GET')[0]
-	print 'result is'
-	print result
-	if result['status'] == '200':
+	result = h.request(url,'GET')[0]
+	if result['status'] =='200':
+	#Reset user session
 		del login_session['access_token']
 		del login_session['gplus_id']
 		del login_session['username']
 		del login_session['email']
 		del login_session['picture']
-		response = make_response(json.dumps('Successfully disconnected'), 200)
-		response.headers['Content-Type'] = 'application/json'
-		return response	    
+		response = redirect(url_for('Platforms'))
+		flash("You are now logged out.")
+		return response
+	else:
+	#If the token is invalid
+		response = make_response(
+            json.dumps('Failed to revoke token for given user.', 400))
+        response.headers['Content-Type'] = 'application/json'
+        return response	    
 
 #JSON APIS to view information 
 @app.route('/platforms/JSON')
@@ -197,6 +196,8 @@ def newplatform():
 
 @app.route('/platforms/<int:platform_id>/edit/', methods = ['GET', 'POST'])
 def editplatform(platform_id):
+	if 'username' not in login_session:
+		return redirect('/login')
 	editedplatform = session.query(Platform).filter_by(id = platform_id).one()
 	if request.method =='POST':
 		if request.form['name']:
@@ -208,6 +209,8 @@ def editplatform(platform_id):
 
 @app.route('/platforms/<int:platform_id>/delete', methods = ['GET', 'POST'])
 def deleteplatform(platform_id):
+	if 'username' not in login_session:
+		return redirect('/login')
 	deleteplatform = session.query(Platform).filter_by(
 		id = platform_id).one()
 	if request.method == 'POST':
@@ -230,6 +233,8 @@ def games(platform_id):
 
 @app.route('/platforms/<int:platform_id>/games/new', methods =['GET', 'POST'])
 def newgame(platform_id):
+	if 'username' not in login_session:
+		return redirect('/login')
 	if request.method == 'POST':
 		newgame = VideoGames(name = request.form['name'],
 			releaseyear = request.form['releaseyear'],
@@ -244,6 +249,8 @@ def newgame(platform_id):
 
 @app.route('/platforms/<int:platform_id>/games/<int:game_id>/edit', methods = ['GET', 'POST'])
 def editgame(platform_id, game_id):
+	if 'username' not in login_session:
+		return redirect('/login')
 	editgame = session.query(VideoGames).filter_by(id=game_id).one()
 	if request.method == 'POST':
 		if request.form['name']:
@@ -255,20 +262,23 @@ def editgame(platform_id, game_id):
 		session.add(editgame)
 		session.commit()
 		flash('You edited the game!')
-		return redirect(url_for('games'), platform_id = platform_id)
+		return redirect(url_for('games', platform_id = platform_id))
 	else:
 		return render_template('editgame.html', platform_id = platform_id, game_id = game_id, g = editgame)
 
 
 
+
 @app.route('/platforms/<int:platform_id>/<int:game_id>/delete', methods =['GET','POST'])
 def deletegame(platform_id,game_id):
+	if 'username' not in login_session:
+		return redirect('/login')
 	deletegame = session.query(VideoGames).filter_by(id=game_id).one()
 	if request.method == 'POST':
 		session.delete(deletegame)
 		session.commit()
 		flash('Say bye to the game!')
-		return redirect(url_for('games'), platform_id = platform_id)
+		return redirect(url_for('games', platform_id = platform_id))
 	else:
 		return render_template('deletegame.html', platform_id = platform_id, game_id = game_id, g = deletegame)
 
@@ -277,4 +287,4 @@ def deletegame(platform_id,game_id):
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
     app.debug = True
-    app.run(host='0.0.0.0', port=5000)		
+    app.run(host='0.0.0.0', port=8000)		
