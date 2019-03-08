@@ -23,3 +23,7 @@ For this project to run on your computer, you need:
   </ul>
 
 <h2>Installing and Running</h2>
+First, download a Unix style terminal, vagrant and virtual box and install them.<br>
+Next clone this repo, unzip and place the file into the vagrant directory. <br>
+Using the Unix style terminal, navigate to the vagrant directory and launch vagrant using:<br>
+```vagrant up```
