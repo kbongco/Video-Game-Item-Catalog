@@ -1,4 +1,5 @@
 <h1>Item Catalog</h1> 
+by: Kathleen Bongco<br>
 This is the second project in Udacity's Full Stack Web developer Nanodegree. In this project, we 
 would be developing a web application that provides a list of various items, in this case video
 games, that provides a list of it and its catagories. The categories each game will be divided into are based on platforms/consoles, each game will contain the title, a brief description, as well as the year it was released.  This will be built using Flask.
@@ -17,8 +18,8 @@ games, that provides a list of it and its catagories. The categories each game w
 For this project to run on your computer, you need: 
 <ul>
   <li>Unix-Style Terminal (You can download this <a href="https://git-scm.com/downloads">Here!</a>)</li>
-  <li>Vagrant (You can download this <a href="https://www.vagrantup.com/downloads.html">Here!</a></li>
-  <li>Virtual Box (You can download this <a href="https://www.virtualbox.org/wiki/Downloads">Here!</a></li>
+  <li>Vagrant (You can download this <a href="https://www.vagrantup.com/downloads.html">Here!</a>)</li>
+  <li>Virtual Box (You can download this <a href="https://www.virtualbox.org/wiki/Downloads">Here!</a>)</li>
   <li>Python</li>
   </ul>
 
