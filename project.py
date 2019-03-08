@@ -258,13 +258,13 @@ def newgame(platform_id):
         session.commit()
         flash("New Game was added!")
         return redirect(url_for('games', platform_id=platform_id,
-            newgame=newgame))
+                                newgame=newgame))
     else:
         return render_template('newgame.html', platform_id=platform_id)
 
 
 @app.route('/platforms/<int:platform_id>/games/<int:game_id>/edit',
-    methods=['GET', 'POST'])
+           methods=['GET', 'POST'])
 def editgame(platform_id, game_id):
     if 'username' not in login_session:
         return redirect('/login')
