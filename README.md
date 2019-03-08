@@ -1,9 +1,17 @@
 <h1>Item Catalog</h1> 
 This is the second project in Udacity's Full Stack Web developer Nanodegree. In this project, we 
 would be developing a web application that provides a list of various items, in this case video
-games, that provides a list of it and its catagories. This will be built using Flask.
+games, that provides a list of it and its catagories. The categories each game will be divided into are based on platforms/consoles, each game will contain the title, a brief description, as well as the year it was released.  This will be built using Flask.
 <br>
 <br>
+<br>
+<h2>Languages used</h2>
+<ul>
+  <li>HTML</li>
+  <li>CSS</li>
+  <li>AJAX/Javascript (for OAUTH login)</li>
+  <li>Python</li>
+</ul>
 
 <h2>Setup</h2>
 For this project to run on your computer, you need: 
@@ -14,20 +22,4 @@ For this project to run on your computer, you need:
   <li>Python 3</li> 
   </ul>
 
-<h2>Installing</h2>
-<ol>
-  <li>Install Virtual Box, Vagrant, and Unix Style Terminal</li>
-  <li>Clone this repo, and unzip and place into Vagrant Directory</li>
-  <li>Launch Vagrant by using:</li>
-    `$vagrant up`
-  <li>Once vagrant is launched, enter the following command</li>
-  `$vagrant ssh`
-  <li>Change the directory to `/vagrant`</li>
-  `$cd/vagrant`
-  <li>In order for the app to properly work, you need to initialize the database by:</li>
-  `$ python database_setup.py`
-  <li>You need to populate the database by using:</li>
-  `$ python menus.py`
-  <li>Once populated and loaded, you can launch the application using:</li>
-  `$ python project.py`
-  <li>Finally, open your browser and go to http://localhost:8000
+<h2>Installing and Running</h2>
