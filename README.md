@@ -27,3 +27,20 @@ First, download a Unix style terminal, vagrant and virtual box and install them.
 Next clone this repo, unzip and place the file into the vagrant directory. <br>
 Using the Unix style terminal, navigate to the vagrant directory and launch vagrant using:<br>
 ```vagrant up```
+<br>
+Once vagrant is up and running login using:
+```vagrant ssh```
+<br>
+Change the directory using:
+``` cd /vagrant```
+<br>
+The following steps are important and need to be initialized for code to work properly! 
+<br>
+Initialize the database and populate the database with the following commands: 
+```python database_setup.py```
+```python gamedatabase.py```
+<br>
+Afterwards, you can run the application with: 
+```python project.py```
+
+Lastly, open your browser and go to  <a href="http://localhost:8000">http://localhost:8000</a>
