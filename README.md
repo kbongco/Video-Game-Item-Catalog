@@ -17,9 +17,9 @@ games, that provides a list of it and its catagories. The categories each game w
 For this project to run on your computer, you need: 
 <ul>
   <li>Unix-Style Terminal (You can download this <a href="https://git-scm.com/downloads">Here!</a>)</li>
-  <li>Vagrant</li>
-  <li>Virtual Box</li>
-  <li>Python 3</li> 
+  <li>Vagrant (You can download this <a href="https://www.vagrantup.com/downloads.html">Here!</a></li>
+  <li>Virtual Box (You can download this <a href="https://www.virtualbox.org/wiki/Downloads">Here!</a></li>
+  <li>Python</li>
   </ul>
 
 <h2>Installing and Running</h2>
