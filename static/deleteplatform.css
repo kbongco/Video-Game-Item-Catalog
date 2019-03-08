@@ -8,13 +8,16 @@ h1{
   
 }
 p{
-  text-align: center;
-  font-size:40px;
+  font-size:30px;
   font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;
 }
-input [type ="submit"]{
-	font-size:30px;
-	font-family:sans-serif;
-	background-color: green;
-
+input[type=submit] {
+  padding:5px 15px;
+  background: #ccc;
+  border: 0 none;
+  curosor:pointer; 
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  align: center; 
 }
+  
